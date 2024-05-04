@@ -160,7 +160,7 @@ function loadMainPage(Authorization_token){
     });
 }
 
-
+ 
 document.addEventListener('DOMContentLoaded', function() {
     var main_div = document.getElementById('main');
     var Authorization_token = null;
