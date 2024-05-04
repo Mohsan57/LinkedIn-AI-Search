@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "LinkedIn Resume Matcher",
+  "version": "2.0",
+  "description": "Generate and compare resumes for LinkedIn job listings.",
+  "permissions": ["activeTab", "storage", "tabs", "http://*/*", "https://*/*"],
+  "background": {
+    "service_worker": "Scripts/background.js"
+  },
+  "action": {
+    "default_popup": "HtmlForms/popup.html",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "content_scripts": [{
+    "js": ["libraries/jquery.min.js", "Scripts/content.js"],
+    "matches": ["http://*/*", "https://*/*"]
+  }]
+  
+}
+

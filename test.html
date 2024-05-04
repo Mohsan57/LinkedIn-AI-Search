@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkedIn Resume Match</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="styles.css" rel="stylesheet">
+  <!-- <script src="popup.js" defer></script> -->
+</head>
+<body>
+  <div class="container">
+    <h6 class="mt-4">LinkedIn Resume Match</h6>
+    <button id="matchBtn" class="btn btn-primary mt-3">Match Resume</button>
+    <div id="result" class="mt-4"></div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.entry.min.js" integrity="sha512-NJEHr6hlBM4MkVxJu+7FBk+pn7r+KD8rh+50DPglV/8T8I9ETqHJH0bO7NRPHaPszzYTxBWQztDfL6iJV6CQTw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    async function gettext(pdfUrl){
+        // var pdf = pdfjsLib.getDocument("resume.pdf");
+        var { pdfjsLib } = globalThis;
+
+        // The workerSrc property shall be specified.
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
+        var loadingTask = pdfjsLib.getDocument(pdfUrl);
+
+        // save pdf
+        await loadingTask.promise.then(function(pdf) {
+          return pdf.then(function(pdf) { // get all pages text
+            var maxPages = pdf.pdfInfo.numPages;
+            var countPromises = []; // collecting all page promises
+            for (var j = 1; j <= maxPages; j++) {
+            var page = pdf.getPage(j);
+
+            var txt = "";
+            countPromises.push(page.then(function(page) { // add page promise
+                var textContent = page.getTextContent();
+                return textContent.then(function(text){ // return content promise
+                return text.items.map(function (s) { return s.str; }).join(''); // value page text 
+                });
+            }));
+            }
+            // Wait for all pages and join text
+            return Promise.all(countPromises).then(function (texts) {
+            return texts.join('');
+            });
+        });
+      });
+        
+        }
+
+// waiting on gettext to finish completion, or error
+gettext("https://tmpfiles.org/dl/5241192/resume.pdf").then(function (text) {
+  alert('parse ' + text);
+}, 
+function (reason) {
+  console.error(reason);
+});
+</script>
+</body>
+</html>
