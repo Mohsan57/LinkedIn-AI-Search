@@ -1,0 +1,10 @@
+{
+  "qdrant":{
+    "url":"https://a67b5a4a-7c51-40cb-99aa-903865335e63.us-east4-0.gcp.cloud.qdrant.io:6333", 
+    "api_key":"sVlrdAWPrVyu-jR1ODYYyb5WlVPe7cAyphpcO4ni0oc2OmcwQ2tOIQ",
+  },
+  "cohere":{
+    "url":"https://api.cohere.ai/v1/similarity",
+    "api_key":"api_key"
+  }
+}
