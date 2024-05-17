@@ -1,6 +1,6 @@
 function login(email, password){
     jQuery.ajax({
-        url: 'http://127.0.0.1:8000/login',
+        url: 'http://127.0.0.1:8000/api/login',
         type: 'POST',
         data: {
             email: email,
@@ -12,9 +12,8 @@ function login(email, password){
                 // Save the token in local storage
                 chrome.storage.sync.set({Authorization_token: response.access}, function() {
                     console.log('Token saved');
-                    
+                    loadMainPage(response.access);
                 });
-                loadMainPage(response.access);
             }
         },
         error: function(error){
@@ -71,6 +70,9 @@ function loadLoginPage(){
         jQuery("#registerpage").click(function(){
             loadRegisterPage();
         });
+        jQuery("#google-signin").click(function(){
+            signInWithGoogle();
+        });
     });
 }
 
@@ -79,7 +81,7 @@ function register(email, password1, password2, first_name, last_name){
     jQuery('#password1_error').empty();
     jQuery('#password2_error').empty();
     jQuery.ajax({
-        url: 'http://127.0.0.1:8000/register',
+        url: 'http://127.0.0.1:8000/api/register',
         type: 'POST',
         data: {
             email: email,
@@ -126,27 +128,117 @@ function register(email, password1, password2, first_name, last_name){
     });
 }
 
+function upload_resume(Authorization_token){
+    var formData = new FormData();
+    formData.append('resume', jQuery('#resume')[0].files[0]);
+
+    jQuery.ajax({
+        url: 'http://127.0.0.1:8000/api/resume',
+        type: 'POST',
+        headers: {
+            Authorization: 'Bearer ' + Authorization_token
+        },
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response){
+            console.log(response);
+            loadMainPage(Authorization_token);
+        },
+        error: function(error){
+            console.log(error);
+            var errors = error.responseJSON;
+            jQuery('#resume_error').empty();
+            if(errors.resume != null){
+                jQuery('#resume_error').append(errors.resume);
+            }
+        }
+    });
+}
+
+function MatchResumeToJob(Authorization_token , jobDescription){
+    jQuery.ajax({
+        url: 'http://127.0.0.1:8000/api/resume-analyze',
+        type: 'POST',
+        data: {
+            jobDescription: jobDescription
+        },
+        headers: {
+            Authorization: 'Bearer ' + Authorization_token
+        },
+        success: function(response){
+            console.log(response);
+            jQuery('#score').text(response.score);
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {action: 'addscore', score: response.score}, async function(_error) {
+                    console.log(_error);
+                });
+            });
+
+            return response;
+        },
+        error: function(error){
+            console.log(error);
+            return error;
+        }
+    });
+}
+
+function get_score(Authorization_token){
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {action: 'scrapeJob'}, async function(response) {
+            if (response) {
+                // Send job data to OpenAI for resume comparison and display the result
+                console.log(response);
+                var jobDescription = `title: ${response.title} \n JD: ${response.description}`;
+                console.log(jobDescription);
+                var jd_score = await MatchResumeToJob(Authorization_token, jobDescription);
+            }
+        });
+    });
+}
+
+
 function loadMainPage(Authorization_token){
     jQuery.ajax({
-        url: 'http://127.0.0.1:8000/user',
+        url: 'http://127.0.0.1:8000/api/user',
         type: 'GET',
         headers: {
             Authorization: 'Bearer ' + Authorization_token
         },
         success: function(response){
             console.log(response);
-            jQuery('#main').load('/HtmlForms/main.html', function() {
-                // Once the main page is loaded, attach event listeners
-                let logoutButton = document.getElementById('logoutButton');
-                logoutButton.addEventListener('click', function(event) {
-                    // Remove the token from local storage
-                    chrome.storage.sync.remove('Authorization_token', function() {
-                        console.log('Token removed');
+            if(response.user.resume != null){
+                jQuery('#main').load('/HtmlForms/main.html', function() {
+                    // Once the main page is loaded, attach event listeners
+                    let logoutButton = document.getElementById('logout');
+                    logoutButton.addEventListener('click', function(event) {
+                        // Remove the token from local storage
+                        chrome.storage.sync.remove('Authorization_token', function() {
+                            console.log('Token removed');
+                        });
+                        // Load the login form
+                        loadLoginPage();
                     });
-                    // Load the login form
-                    loadLoginPage();
+                    jQuery('#match-resume').click(function(){
+                        get_score(Authorization_token);
+                    });
                 });
+            }else{
+                jQuery('#main').load('/HtmlForms/upload_resume.html', function() {
+                    // Once the main page is loaded, attach event listeners
+                    jQuery("#uploadresume").submit(function(event){
+                        var resume = document.getElementById('resume').files[0];
+                        if (resume == null){
+                            jQuery('#resume_error').empty();
+                            jQuery('#resume_error').append("Please select a file to upload");
+                        }else{
+                            event.preventDefault(); // Prevent default form submission
+                            upload_resume(Authorization_token);
+                        }
+                    });
             });
+            }
         },
         error: function(error){
             console.log(error);
@@ -160,7 +252,26 @@ function loadMainPage(Authorization_token){
     });
 }
 
- 
+function signInWithGoogle() {
+    jQuery.ajax({
+        url: 'http://127.0.0.1:8000/api/auth/google/login/',
+        type: 'POST',
+        success: function(response){
+            console.log(response);
+            if(response.access != null){
+                // Save the token in local storage
+                chrome.storage.sync.set({Authorization_token: response.access}, function() {
+                    console.log('Token saved');
+                    loadMainPage(response.access);
+                });
+            }
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var main_div = document.getElementById('main');
     var Authorization_token = null;
