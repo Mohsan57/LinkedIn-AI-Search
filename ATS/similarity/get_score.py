@@ -39,7 +39,7 @@ def get_score(resume_string, job_description_string):
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
-model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 def get_similarity_score(resume_dict, job_dict):
     resume_keywords = resume_dict["extracted_keywords"]

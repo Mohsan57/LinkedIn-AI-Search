@@ -4,6 +4,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from .googleview import GoogleLogin, GoogleCallback
 
 register = views.UserView.as_view({'post': 'signup'})
 login = views.UserView.as_view({'post': 'login'})
@@ -14,4 +15,6 @@ urlpatterns = [
     path('login', login, name='login'),
     path('resume', views.ResumeView.as_view({'post': 'post'}), name='resume'),
     path('resume-analyze', views.ResumeMatchView.as_view({'post':'post'}), name='analyze-resume'),
+    path('auth/google/login/', GoogleLogin.as_view(), name='api_auth'),
+    path('auth/google/callback/', GoogleCallback.as_view(), name='api_login'),
 ]

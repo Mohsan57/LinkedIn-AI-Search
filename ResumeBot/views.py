@@ -17,7 +17,7 @@ from ATS.JobDescriptionProcessor import JobDescriptionProcessor
 class UserView(GenericViewSet):
     
     permission_classes = [IsAuthenticated]
-
+    @csrf_exempt
     def get(self, request):
         # Extract user id from the JWT token
         user_id = request.user.id
@@ -38,6 +38,7 @@ class UserView(GenericViewSet):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
     
     @action(methods=['post'], detail=False) 
+    @csrf_exempt
     def signup(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -57,6 +58,7 @@ class UserView(GenericViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @action(methods=['post'], detail=False) 
+    @csrf_exempt
     def login(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.login_validate(request.data):
