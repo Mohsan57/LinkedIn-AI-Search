@@ -1,11 +1,3 @@
-// // background.js
-// chrome.action.onClicked.addListener((tab) => {
-//     chrome.scripting.executeScript({
-//       target: {tabId: tab.id},
-//       files: ['/Scripts/content.js']
-//     });
-//   });
-
 // background.js
 chrome.action.onClicked.addListener((tab) => {
   chrome.sidePanel.setPanelBehavior({
@@ -24,12 +16,3 @@ chrome.action.onClicked.addListener((tab) => {
     files: ['/Scripts/content.js']
   });
 });
-
-// chrome.runtime.onInstalled.once(() => {
-//   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-//     chrome.tabs.executeScript(tabId, { file: "/Scripts/contentScript.js" });
-//     // if (changeInfo.status === 'loading' && changeInfo.url === "https://www.linkedin.com/jobs/*") {
-//     //   chrome.tabs.executeScript(tabId, { file: "/Scripts/contentScript.js" });
-//     // }
-//   });
-// });

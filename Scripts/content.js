@@ -16,9 +16,10 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'scrapeJob') {
       const jobTitle = document.querySelector('.job-details-jobs-unified-top-card__job-title').innerText;
-      const spans = document.querySelectorAll('.jobs-description-content__text span');
-      const spanTexts = Array.from(spans, span => span.innerText.trim()).join('\n');
-      sendResponse({title: jobTitle, description: spanTexts});
+      // const spans = document.querySelectorAll('.jobs-description-content__text span');
+      // const spanTexts = Array.from(spans, span => span.innerText.trim()).join('\n');
+      const jd = document.querySelector('.jobs-description-content__text').innerText;
+      sendResponse({title: jobTitle, description: jd});
     }
     else if (message.action === 'addscore') {
       var existing_score = document.querySelector('.ai_score');
