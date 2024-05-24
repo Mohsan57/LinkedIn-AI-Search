@@ -42,8 +42,7 @@ INSTALLED_APPS = [
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.google.GoogleOpenId',
-    'social_core.backends.django.DjangoOAuth2OAuth',
+    # 'social_core.backends.django.DjangoOAuth2OAuth',
     'django.contrib.auth.backends.ModelBackend',
 )
 

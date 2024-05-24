@@ -11,7 +11,7 @@ from .models import Resume, User
 from rest_framework.permissions import IsAuthenticated
 from ATS.similarity import get_score
 from ATS.JobDescriptionProcessor import JobDescriptionProcessor
-
+from openai import OpenAI
 
 @permission_classes([permissions.AllowAny])
 class UserView(GenericViewSet):
@@ -133,6 +133,22 @@ class ResumeMatchView(GenericViewSet):
     def post(self, request):
         user_id = request.user.id
         try:
+#             resume_text = Resume.objects.get(user = user_id).resume_text
+#             job_description = request.data['jobDescription']
+#             # openai = OpenAI("sk-proj-5h0vOheErW4Qf1XOzNXkT3BlbkFJyYCP9yfwP1xbQnSQWxbv")
+#             openai = OpenAI(api_key="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")
+#             prompt = f"""Please match Job Description to My Resume and provide me Matching Score.
+# And the oupt will be in json format like: { "score":0.0}. Not any other text
+# Resume: {resume_text}\nJob Description: {job_description}\n"""
+#             response = openai.chat.completions.create(
+#                 model="gpt-4o",
+#                 messages=[
+#                     {"role": "system", "content": prompt},
+#                     {"role": "user", "content": "Match the Job Description to My Resume"},
+#                 ],
+#             )
+#             score = response.choices[0].message
+#             score = score * 100
             resume = Resume.objects.get(user = user_id)
             resume_dict = resume.resume_json
             job_description = request.data['jobDescription']
@@ -145,7 +161,7 @@ class ResumeMatchView(GenericViewSet):
             score = round(score, 2)
             required_skills = ''
             # Add your logic to calculate the score, reason, and required skills here
-            return Response({'score': score, 'required_skills': required_skills})
+            return Response({'score': score, 'required_skills': ''})
         except Resume.DoesNotExist:
             return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
         except User.DoesNotExist:
