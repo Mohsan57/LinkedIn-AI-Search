@@ -17,6 +17,7 @@ cryptography==42.0.7
 cymem==2.0.8
 cytoolz==0.12.3
 defusedxml==0.8.0rc2
+distro==1.9.0
 Django==5.0.4
 django-allauth==0.63.0
 django-cors-headers==4.3.1
@@ -62,6 +63,7 @@ numpy==1.26.4
 oauthlib==3.2.2
 onnx==1.16.0
 onnxruntime==1.17.3
+openai==1.30.2
 packaging==24.0
 pillow==10.3.0
 portalocker==2.8.2
@@ -103,7 +105,9 @@ thinc==8.2.3
 threadpoolctl==3.5.0
 tokenizers==0.19.1
 toolz==0.12.1
-torch==2.3.0
+torch==2.0.1+cu117
+torchaudio==2.0.2+cu117
+torchvision==0.15.2+cu117
 tqdm==4.66.4
 transformers==4.40.2
 typer==0.9.4

@@ -1,7 +1,7 @@
-from typing import List
+# from typing import List
 
-from qdrant_client import QdrantClient, models
-from qdrant_client.http.models import Batch
+# from qdrant_client import QdrantClient, models
+# from qdrant_client.http.models import Batch
 
 # client = QdrantClient(":memory:")
 # client.set_model("BAAI/bge-base-en-v1.5")
@@ -37,9 +37,11 @@ def get_score(resume_string, job_description_string):
 #     return score
       
 from sentence_transformers import SentenceTransformer
+import torch
 from sklearn.metrics.pairwise import cosine_similarity
-
-model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device=device)
 
 def get_similarity_score(resume_dict, job_dict):
     resume_keywords = resume_dict["extracted_keywords"]
