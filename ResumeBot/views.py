@@ -135,8 +135,7 @@ class ResumeMatchView(GenericViewSet):
         try:
 #             resume_text = Resume.objects.get(user = user_id).resume_text
 #             job_description = request.data['jobDescription']
-#             # openai = OpenAI("sk-proj-5h0vOheErW4Qf1XOzNXkT3BlbkFJyYCP9yfwP1xbQnSQWxbv")
-#             openai = OpenAI(api_key="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")
+#             # openai = OpenAI("*****")
 #             prompt = f"""Please match Job Description to My Resume and provide me Matching Score.
 # And the oupt will be in json format like: { "score":0.0}. Not any other text
 # Resume: {resume_text}\nJob Description: {job_description}\n"""
